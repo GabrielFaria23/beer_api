@@ -22,7 +22,7 @@ public class Beer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    //colum bd
     @Column(nullable = false, unique = true)
     private String name;
 
