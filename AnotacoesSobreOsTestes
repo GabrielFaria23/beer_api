@@ -1,0 +1,10 @@
+Quando vamos utilizar o Mockito precisamos colocar a anotação na classe:
+@ExtendWith(MockitoExtension.class)
+
+Quando queremos criar um objeto que vai "simular" uma requisição por exemplo utilizamos a anotação:
+@Mock
+exemplo:
+
+@Mock
+private BeerRepository beerRepository;
+

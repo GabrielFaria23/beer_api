@@ -56,10 +56,13 @@ public class BeerControllerTest {
 
     @Test
     void whenPOSTIsCalledThenABeerIsCreated() throws Exception {
+        //given
         BeerDTO beerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
 
+        //when
         when(beerService.createBeer(beerDTO)).thenReturn(beerDTO);
 
+        //then
         mockMvc.perform(post(BEER_API_URL_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(BeerDTOBuilder.asJsonString(beerDTO)))
@@ -71,9 +74,13 @@ public class BeerControllerTest {
 
     @Test
     void whenPOSTIsCalledWithouRequiredFieldThenAnErrorIsReturned() throws Exception {
+        //given
         BeerDTO beerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
+
+        // when
         beerDTO.setName(null);
 
+        //then
         mockMvc.perform(post(BEER_API_URL_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(BeerDTOBuilder.asJsonString(beerDTO)))
@@ -82,10 +89,13 @@ public class BeerControllerTest {
 
     @Test
     void whenGETIsCalledWithValidNameThenOkStatusIsReturned() throws Exception {
+        //given
         BeerDTO beerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
 
+        //when
         when(beerService.findByName(beerDTO.getName())).thenReturn(beerDTO);
 
+        //then
         mockMvc.perform(get(BEER_API_URL_PATH + "/" + beerDTO.getName())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -96,10 +106,13 @@ public class BeerControllerTest {
 
     @Test
     void whenGETIsCalledWithNotRegisteredNameThenNotFoundStatusIsReturned() throws Exception {
+        //given
         BeerDTO beerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
 
+        //when
         when(beerService.findByName(beerDTO.getName())).thenThrow(BeerNotFoundException.class);
 
+        //then
         mockMvc.perform(get(BEER_API_URL_PATH + "/" + beerDTO.getName())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
@@ -107,10 +120,13 @@ public class BeerControllerTest {
 
     @Test
     void whenGETListWithBeersIsCalledThenOkStatusIsReturned() throws Exception {
+        //given
         BeerDTO beerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
 
+        //when
         when(beerService.listAll()).thenReturn(Collections.singletonList(beerDTO));
 
+        //then
         mockMvc.perform(get(BEER_API_URL_PATH)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -119,32 +135,32 @@ public class BeerControllerTest {
                 .andExpect(jsonPath("$[0].type", is(beerDTO.getType().toString())));
     }
 
-    @Test
-    void whenGETListWithoutBeersIsCalledThenOkStatusIsReturned() throws Exception {
-        when(beerService.listAll()).thenReturn(Collections.EMPTY_LIST);
-
-        mockMvc.perform(get(BEER_API_URL_PATH)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void whenDELETEIsCalledWithValidIdThenNoContentStatusIsReturned() throws Exception {
-        doNothing().when(beerService).deleteById(VALID_BEER_ID);
-
-        mockMvc.perform(delete(BEER_API_URL_PATH + "/" + VALID_BEER_ID)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent());
-
-        verify(beerService, times(1)).deleteById(VALID_BEER_ID);
-    }
-
-    @Test
-    void whenDELETEIsCalledWithoutValidIdThenNotFoundStatusIsReturned() throws Exception {
-        doThrow(BeerNotFoundException.class).when(beerService).deleteById(INVALID_BEER_ID);
-
-        mockMvc.perform(delete(BEER_API_URL_PATH + "/" + INVALID_BEER_ID)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
-    }
+//    @Test
+//    void whenGETListWithoutBeersIsCalledThenOkStatusIsReturned() throws Exception {
+//        when(beerService.listAll()).thenReturn(Collections.EMPTY_LIST);
+//
+//        mockMvc.perform(get(BEER_API_URL_PATH)
+//                .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isOk());
+//    }
+//
+//    @Test
+//    void whenDELETEIsCalledWithValidIdThenNoContentStatusIsReturned() throws Exception {
+//        doNothing().when(beerService).deleteById(VALID_BEER_ID);
+//
+//        mockMvc.perform(delete(BEER_API_URL_PATH + "/" + VALID_BEER_ID)
+//                .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isNoContent());
+//
+//        verify(beerService, times(1)).deleteById(VALID_BEER_ID);
+//    }
+//
+//    @Test
+//    void whenDELETEIsCalledWithoutValidIdThenNotFoundStatusIsReturned() throws Exception {
+//        doThrow(BeerNotFoundException.class).when(beerService).deleteById(INVALID_BEER_ID);
+//
+//        mockMvc.perform(delete(BEER_API_URL_PATH + "/" + INVALID_BEER_ID)
+//                .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isNotFound());
+//    }
 }
