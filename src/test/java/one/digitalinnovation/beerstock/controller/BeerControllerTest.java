@@ -19,6 +19,7 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import java.util.Collections;
 
+import static one.digitalinnovation.beerstock.utils.JsonConvertionUtils.*;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -56,16 +57,16 @@ public class BeerControllerTest {
 
     @Test
     void whenPOSTIsCalledThenABeerIsCreated() throws Exception {
-        //given
+        // given
         BeerDTO beerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
 
-        //when
+        // when
         when(beerService.createBeer(beerDTO)).thenReturn(beerDTO);
 
-        //then
+        // then
         mockMvc.perform(post(BEER_API_URL_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(BeerDTOBuilder.asJsonString(beerDTO)))
+                .content(asJsonString(beerDTO)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name", is(beerDTO.getName())))
                 .andExpect(jsonPath("$.brand", is(beerDTO.getBrand())))
@@ -83,7 +84,7 @@ public class BeerControllerTest {
         //then
         mockMvc.perform(post(BEER_API_URL_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(BeerDTOBuilder.asJsonString(beerDTO)))
+                .content(asJsonString(beerDTO)))
                 .andExpect(status().isBadRequest());
     }
 
@@ -105,7 +106,7 @@ public class BeerControllerTest {
     }
 
     @Test
-    void whenGETIsCalledWithNotRegisteredNameThenNotFoundStatusIsReturned() throws Exception {
+    void whenGETIsCalledWithoutRegisteredNameThenNotFoundStatusIsReturned() throws Exception {
         //given
         BeerDTO beerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
 
@@ -135,32 +136,34 @@ public class BeerControllerTest {
                 .andExpect(jsonPath("$[0].type", is(beerDTO.getType().toString())));
     }
 
-//    @Test
-//    void whenGETListWithoutBeersIsCalledThenOkStatusIsReturned() throws Exception {
-//        when(beerService.listAll()).thenReturn(Collections.EMPTY_LIST);
-//
-//        mockMvc.perform(get(BEER_API_URL_PATH)
-//                .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk());
-//    }
-//
-//    @Test
-//    void whenDELETEIsCalledWithValidIdThenNoContentStatusIsReturned() throws Exception {
-//        doNothing().when(beerService).deleteById(VALID_BEER_ID);
-//
-//        mockMvc.perform(delete(BEER_API_URL_PATH + "/" + VALID_BEER_ID)
-//                .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isNoContent());
-//
-//        verify(beerService, times(1)).deleteById(VALID_BEER_ID);
-//    }
-//
-//    @Test
-//    void whenDELETEIsCalledWithoutValidIdThenNotFoundStatusIsReturned() throws Exception {
-//        doThrow(BeerNotFoundException.class).when(beerService).deleteById(INVALID_BEER_ID);
-//
-//        mockMvc.perform(delete(BEER_API_URL_PATH + "/" + INVALID_BEER_ID)
-//                .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isNotFound());
-//    }
+    @Test
+    void whenGETListWithoutBeersIsCalledThenOkStatusIsReturned() throws Exception {
+        when(beerService.listAll()).thenReturn(Collections.EMPTY_LIST);
+
+        mockMvc.perform(get(BEER_API_URL_PATH)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void whenDELETEIsCalledWithValidIdThenNoContentStatusIsReturned() throws Exception {
+        doNothing().when(beerService).deleteById(VALID_BEER_ID);
+
+        mockMvc.perform(delete(BEER_API_URL_PATH + "/" + VALID_BEER_ID)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        verify(beerService, times(1)).deleteById(VALID_BEER_ID);
+    }
+
+    @Test
+    void whenDELETEIsCalledWithoutValidIdThenNotFoundStatusIsReturned() throws Exception {
+        //when
+        doThrow(BeerNotFoundException.class).when(beerService).deleteById(INVALID_BEER_ID);
+
+        //then
+        mockMvc.perform(delete(BEER_API_URL_PATH + "/" + INVALID_BEER_ID)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
 }
